@@ -98,9 +98,15 @@ class EDA:
         
         fig, axes = plt.subplots(2, 2)
 
-        df.groupby("EmploymentDuration")["CreditRisk (y)"].mean().sort_values(ascending=False).plot(kind="bar", figsize=(12, 12), title="Risk credit rate according to employment duration", ax=axes[1,1])
-        df.groupby("CreditRisk (y)")["CreditDuration"].mean().plot(kind="bar", figsize=(12, 12), title="Risk credit rate according to credit duration", rot=0, ax=axes[0,1])
-        df.groupby("CreditHistory")["CreditRisk (y)"].mean().sort_values(ascending=False).plot(kind="bar", figsize=(12, 13), title="Credit risk according to purpose product", ax=axes[1, 0])
+        df.groupby("EmploymentDuration")["CreditRisk (y)"].mean().sort_values(ascending=False).plot(kind="bar",
+        figsize=(12, 12), title="Risk credit rate according to employment duration", ax=axes[1,1])
+        
+        df.groupby("CreditRisk (y)")["CreditDuration"].mean().plot(kind="bar", figsize=(12, 12),
+        title="Risk credit rate according to credit duration", rot=0, ax=axes[0,1])
+        
+        df.groupby("CreditHistory")["CreditRisk (y)"].mean().sort_values(ascending=False).plot(kind="bar", 
+        figsize=(12, 13), title="Credit risk according to purpose product", ax=axes[1, 0])
+        
         df.boxplot("CreditAmount", ax=axes[0,0], by="CreditRisk (y)");
      
 
