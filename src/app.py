@@ -186,7 +186,11 @@ class App:
 
             st.header("PDP plot")
             st.info(
-                "💡The Partial Dependence Plot shows the marginal effect one or two features have on the predicted outcome of a machine learning model. A partial dependence plot can show whether the relationship between the target and a feature is linear, monotonic or more complex."
+                "💡The Partial Dependence Plot shows the marginal effect one or"
+                " two features have on the predicted outcome of a machine"
+                " learning model. A partial dependence plot can show whether"
+                " the relationship between the target and a feature is linear, "
+                "monotonic or more complex."
             )
             ice = st.checkbox("ICE")
             center = st.checkbox("Center")
@@ -202,7 +206,9 @@ class App:
 
             st.header("ALE plot")
             st.info(
-                "💡Accumulated local effects describe how features influence the prediction of a machine learning model on average. ALE plots are a faster and unbiased alternative to partial dependence plots "
+                "💡Accumulated local effects describe how features influence the"
+                " prediction of a machine learning model on average. ALE plots "
+                "are a faster and unbiased alternative to partial dependence plots "
             )
             ale_eff = plot_ale(clf, X_train_prep, X_train, transformer, column)
             st.pyplot(ale_eff)
@@ -220,7 +226,8 @@ class App:
 
             st.header("Force plot")
             st.info(
-                "💡One can deep dive to explore for a given account what have been the main drivers of the prediction"
+                "💡One can deep dive to explore for a given account what have "
+                "been the main drivers of the prediction"
             )
             index = st.number_input("Client id", min_value=0, max_value=599)
             force_plot(index, clf, X_train_prep, transformer)
