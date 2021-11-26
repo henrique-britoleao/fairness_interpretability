@@ -27,7 +27,7 @@ PATH = 'data/data_project.xlsx'
 @st.cache()
 def load_data(path=PATH):
     data = pd.read_excel(path)
-    with open('config.json', "r") as f:
+    with open('config/categories.json', "r") as f:
         dic = f.read()
     # reconstructing the data as a dictionary
     js = json.loads(dic)
