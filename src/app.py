@@ -273,7 +273,8 @@ class App:
                 clf, dataset, model_features, column, title, group_column=y_true
             )
             st.pyplot(test_1)
-            title2 = f"Conditional statistical parity for feature {column} depending on the 'group' column"
+            title2 = f"Conditional statistical parity for feature {column}"
+            " depending on the 'group' column"
             test_2 = get_fpdp_results(
                 clf,
                 dataset,
