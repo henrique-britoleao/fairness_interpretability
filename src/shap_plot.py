@@ -6,6 +6,7 @@ import pandas as pd
 
 sys.path.insert(0, "..")
 
+
 def load_shap_data():
     df_categorical = pd.read_csv("data/df_categorical_sum_shap.csv")
     df_shap_numerical = pd.read_csv("data/df_shap_numerical.csv")
@@ -13,11 +14,13 @@ def load_shap_data():
     df_shap = pd.read_csv("data/df_shap.csv")
     return df_categorical, df_shap_numerical, X_test_shap_good_columns, df_shap
 
+
 df_categorical, df_shap_numerical, X_test_shap_good_columns, df_shap = load_shap_data()
+
 
 def force_plot(customer_index, model, X_train_prep, transformer):
     explainer = shap.TreeExplainer(
-    model, pd.DataFrame(X_train_prep, columns=transformer.get_feature_names())
+        model, pd.DataFrame(X_train_prep, columns=transformer.get_feature_names())
     )
     fig, ax = plt.subplots()
     return shap.force_plot(
@@ -27,6 +30,7 @@ def force_plot(customer_index, model, X_train_prep, transformer):
         link="logit",
         matplotlib=True,
     )
+
 
 def summary_plot_numerical(X_test):
     fig1, ax1 = plt.subplots()

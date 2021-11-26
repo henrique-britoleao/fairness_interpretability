@@ -1,8 +1,17 @@
 from pdpbox.pdp import PDPIsolate
 from pdpbox.pdp_calc_utils import _calc_ice_lines, _prepare_pdp_count_data
-from pdpbox.utils import (_check_model, _check_dataset, _check_percentile_range, _check_feature,
-                    _check_grid_type, _check_memory_limit, _make_list, _calc_memory_usage, _get_grids, 
-                    _get_string)
+from pdpbox.utils import (
+    _check_model,
+    _check_dataset,
+    _check_percentile_range,
+    _check_feature,
+    _check_grid_type,
+    _check_memory_limit,
+    _make_list,
+    _calc_memory_usage,
+    _get_grids,
+    _get_string,
+)
 from scipy.stats import chi2_contingency, chi2
 
 import pandas as pd
@@ -14,11 +23,25 @@ from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 from joblib import Parallel, delayed
 
 import warnings
-warnings.filterwarnings('ignore')
 
-def fpdp_isolate(model, dataset, model_features, feature, num_grid_points=10, grid_type='percentile',
-                percentile_range=None, grid_range=None, cust_grid_points=None,
-                memory_limit=0.5, n_jobs=1, predict_kwds={}, data_transformer=None):
+warnings.filterwarnings("ignore")
+
+
+def fpdp_isolate(
+    model,
+    dataset,
+    model_features,
+    feature,
+    num_grid_points=10,
+    grid_type="percentile",
+    percentile_range=None,
+    grid_range=None,
+    cust_grid_points=None,
+    memory_limit=0.5,
+    n_jobs=1,
+    predict_kwds={},
+    data_transformer=None,
+):
     """Calculate PDP isolation plot
     Parameters
     ----------
@@ -77,18 +100,22 @@ def fpdp_isolate(model, dataset, model_features, feature, num_grid_points=10, gr
     # feature_grids: grid points to calculate on
     # display_columns: xticklabels for grid points
     percentile_info = []
-    if feature_type == 'binary':
+    if feature_type == "binary":
         feature_grids = np.array([0, 1])
-        display_columns = ['%s_0' % feature, '%s_1' % feature]
-    elif feature_type == 'onehot':
+        display_columns = ["%s_0" % feature, "%s_1" % feature]
+    elif feature_type == "onehot":
         feature_grids = np.array(feature)
         display_columns = feature
     else:
         # calculate grid points for numeric features
         if cust_grid_points is None:
             feature_grids, percentile_info = _get_grids(
-                feature_values=_dataset[feature].values, num_grid_points=num_grid_points, grid_type=grid_type,
-                percentile_range=percentile_range, grid_range=grid_range)
+                feature_values=_dataset[feature].values,
+                num_grid_points=num_grid_points,
+                grid_type=grid_type,
+                percentile_range=percentile_range,
+                grid_range=grid_range,
+            )
         else:
             # make sure grid points are unique and in ascending order
             feature_grids = np.array(sorted(np.unique(cust_grid_points)))
@@ -96,21 +123,36 @@ def fpdp_isolate(model, dataset, model_features, feature, num_grid_points=10, gr
 
     # Parallel calculate ICE lines
     true_n_jobs = _calc_memory_usage(
-        df=_dataset, total_units=len(feature_grids), n_jobs=n_jobs, memory_limit=memory_limit)
+        df=_dataset,
+        total_units=len(feature_grids),
+        n_jobs=n_jobs,
+        memory_limit=memory_limit,
+    )
     grid_results = Parallel(n_jobs=true_n_jobs)(
         delayed(_calc_ice_lines)(
-            feature_grid, data=_dataset, model=model, model_features=model_features, n_classes=n_classes,
-            feature=feature, feature_type=feature_type, predict_kwds=predict_kwds, data_transformer=data_transformer)
-        for feature_grid in feature_grids)
+            feature_grid,
+            data=_dataset,
+            model=model,
+            model_features=model_features,
+            n_classes=n_classes,
+            feature=feature,
+            feature_type=feature_type,
+            predict_kwds=predict_kwds,
+            data_transformer=data_transformer,
+        )
+        for feature_grid in feature_grids
+    )
 
     if n_classes > 2:
         ice_lines = []
         for n_class in range(n_classes):
-            ice_line_n_class = pd.concat([grid_result[n_class] for grid_result in grid_results], axis=1)
+            ice_line_n_class = pd.concat(
+                [grid_result[n_class] for grid_result in grid_results], axis=1
+            )
             ice_lines.append(ice_line_n_class)
     else:
         ice_lines = pd.concat(grid_results, axis=1)
-        
+
     return ice_lines
 
     # # calculate the counts
@@ -139,40 +181,43 @@ def fpdp_isolate(model, dataset, model_features, feature, num_grid_points=10, gr
     # return pdp_isolate_out
 
 
-def get_fpdp_results(model, dataset:pd.DataFrame, model_features:list, column:str, title:str, group_column=None):
-    cols = [feature for feature in dataset.columns if feature.split("_")[0]==column]
+def get_fpdp_results(
+    model,
+    dataset: pd.DataFrame,
+    model_features: list,
+    column: str,
+    title: str,
+    group_column=None,
+):
+    cols = [feature for feature in dataset.columns if feature.split("_")[0] == column]
     if len(cols) == 1:
         feature = column
     else:
         feature = cols
     pdp_fare = fpdp_isolate(
-        model=model,
-        dataset=dataset,
-        model_features=model_features,
-        feature=feature
+        model=model, dataset=dataset, model_features=model_features, feature=feature
     )
-    
-    results = pd.DataFrame(columns=['p_val'])
-    
+
+    results = pd.DataFrame(columns=["p_val"])
+
     for col in pdp_fare.columns:
-        preds = pdp_fare[col].apply(lambda x: 0 if x<0.5 else 1)
-        
+        preds = pdp_fare[col].apply(lambda x: 0 if x < 0.5 else 1)
+
         if group_column is not None:
-            results.loc[col, 'p_val'] =  compute_conditional_chi_squared(
+            results.loc[col, "p_val"] = compute_conditional_chi_squared(
                 groups=[0, 1],
                 group_column=group_column,
                 preds=preds,
-                fairness_column=dataset['Gender']
+                fairness_column=dataset["Gender"],
             )[1]
         else:
-            results.loc[col, 'p_val'] =  compute_vanilla_chi_squared(
-                preds=preds,
-                fairness_column=dataset['Gender']
+            results.loc[col, "p_val"] = compute_vanilla_chi_squared(
+                preds=preds, fairness_column=dataset["Gender"]
             )[1]
-            
-    fig, ax = plt.subplots(figsize=(8, 5))   
-    results.plot(title=f'FPDP plot for column {column}', ax=ax)
-    ax.axhline(y=0.05, color='r', linestyle='-')
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    results.plot(title=f"FPDP plot for column {column}", ax=ax)
+    ax.axhline(y=0.05, color="r", linestyle="-")
     plt.xticks(range(len(cols)), rotation=45)
     ax.set_title(title)
     ax.set_xticklabels(cols)
@@ -180,35 +225,33 @@ def get_fpdp_results(model, dataset:pd.DataFrame, model_features:list, column:st
 
 
 def compute_vanilla_chi_squared(
-    preds: np.ndarray, 
-    fairness_column: pd.Series
+    preds: np.ndarray, fairness_column: pd.Series
 ) -> tuple[float, float]:
     contingency_table = pd.crosstab(preds, fairness_column)
     test_statistic, p_val, _, _ = chi2_contingency(contingency_table)
-    
+
     return test_statistic, p_val
 
 
 def compute_conditional_chi_squared(
-    groups: list[int], 
-    group_column: pd.Series, 
-    preds: np.ndarray, 
+    groups: list[int],
+    group_column: pd.Series,
+    preds: np.ndarray,
     fairness_column: pd.Series,
 ) -> tuple[float, float]:
     # initialize test_statistic result
     test_statistic = 0
-    
+
     for group in groups:
         # select indexes of corresponding group
-        group_idx = np.where(group_column==group)[0]
+        group_idx = np.where(group_column == group)[0]
         group_preds = preds[group_idx]
-        
-        contingency_table = pd.crosstab(group_preds, 
-                                        fairness_column[group_idx])
+
+        contingency_table = pd.crosstab(group_preds, fairness_column[group_idx])
         chi_sq_stats, _, _, _ = chi2_contingency(contingency_table)
         test_statistic += chi_sq_stats
-    
+
     # calculate the p-value
     p_val = chi2.pdf(test_statistic, 2)
-    
+
     return test_statistic, p_val
