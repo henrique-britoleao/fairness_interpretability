@@ -234,7 +234,7 @@ def compute_vanilla_chi_squared(
 
 
 def compute_conditional_chi_squared(
-    groups: list[int],
+    groups: list,
     group_column: pd.Series,
     preds: np.ndarray,
     fairness_column: pd.Series,
