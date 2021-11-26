@@ -6,11 +6,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import json
 
-from sklearn import tree
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import make_column_transformer
-from sklearn.pipeline import make_pipeline
-from sklearn.metrics import mean_squared_error
 from xgboost import XGBClassifier
 from PIL import Image
 from src.global_interpretability import plot_pdp, plot_ale, plot_heatmap
