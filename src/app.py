@@ -189,7 +189,7 @@ class App:
                 " the relationship between the target and a feature is linear, "
                 "monotonic or more complex."
             )
-            ice = st.checkbox("ICE")
+            ice = st.checkbox("ICE", value=True)
             center = st.checkbox("Center")
             fig = plot_pdp(
                 model=clf,
@@ -289,12 +289,13 @@ class App:
             st.pyplot(test_3)
 
             st.header("Correction of the model")
+            st.error("Work in progress")
             TO_DROP = st.multiselect(
                 "Variables to drop:", NUMERICAL_COLS + CATEGORICAL_COLS
             )
             retrain = st.checkbox("Retrain", value=False)
             if retrain:
-                TO_DROP = 1
+                TO_DROP = "foo"
 
 
 def traffic_light(p_val: float):
