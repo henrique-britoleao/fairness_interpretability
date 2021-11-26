@@ -155,31 +155,6 @@ def fpdp_isolate(
 
     return ice_lines
 
-    # # calculate the counts
-    # count_data = _prepare_pdp_count_data(
-    #     feature=feature, feature_type=feature_type, data=_dataset[_make_list(feature)], feature_grids=feature_grids)
-
-    # # prepare histogram information for numeric feature
-    # hist_data = None
-    # if feature_type == 'numeric':
-    #     hist_data = _dataset[feature].values
-
-    # # combine the final results
-    # pdp_params = {'n_classes': n_classes, 'feature': feature, 'feature_type': feature_type,
-    #               'feature_grids': feature_grids, 'percentile_info': percentile_info,
-    #               'display_columns': display_columns, 'count_data': count_data, 'hist_data': hist_data}
-    # if n_classes > 2:
-    #     pdp_isolate_out = []
-    #     for n_class in range(n_classes):
-    #         pdp = ice_lines[n_class][feature_grids].mean().values
-    #         pdp_isolate_out.append(
-    #             PDPIsolate(which_class=n_class, ice_lines=ice_lines[n_class], pdp=pdp, **pdp_params))
-    # else:
-    #     pdp = ice_lines[feature_grids].mean().values
-    #     pdp_isolate_out = PDPIsolate(which_class=None, ice_lines=ice_lines, pdp=pdp, **pdp_params)
-
-    # return pdp_isolate_out
-
 
 def get_fpdp_results(
     model,
@@ -253,5 +228,5 @@ def compute_conditional_chi_squared(
 
     # calculate the p-value
     p_val = chi2.pdf(test_statistic, 2)
-
+    
     return test_statistic, p_val
