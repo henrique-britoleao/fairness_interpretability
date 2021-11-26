@@ -50,6 +50,15 @@ ENV/
 env.bak/
 venv.bak/
 
-# Data
-data/*
 #
+notebooks/EDA.ipynb
+src/deliverable_step1234.ipynb
+.gitignore
+src/deliverable.ipynb
+src/deliverable1.ipynb
+src/deliverable_h.ipynb
+src/deliverable.ipynb
+notebooks/surrogate.jpg
+.gitignore
+Untitled.ipynb
+src/deliverable copy.ipynb
