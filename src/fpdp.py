@@ -226,7 +226,7 @@ def get_fpdp_results(
 
 def compute_vanilla_chi_squared(
     preds: np.ndarray, fairness_column: pd.Series
-) -> tuple[float, float]:
+):
     contingency_table = pd.crosstab(preds, fairness_column)
     test_statistic, p_val, _, _ = chi2_contingency(contingency_table)
 
@@ -238,7 +238,7 @@ def compute_conditional_chi_squared(
     group_column: pd.Series,
     preds: np.ndarray,
     fairness_column: pd.Series,
-) -> tuple[float, float]:
+):
     # initialize test_statistic result
     test_statistic = 0
 
