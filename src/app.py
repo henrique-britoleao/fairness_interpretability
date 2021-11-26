@@ -35,6 +35,7 @@ def load_data(path=PATH):
     data = data.replace(js)
     return data
 
+########################################Preprocessing#####################################################
 #import data
 data = load_data()
 
@@ -78,6 +79,7 @@ dataset.columns = ONE_HOT_COLS+NUMERICAL_COLS
 dataset = dataset.dropna()
 
 model_features = ONE_HOT_COLS+NUMERICAL_COLS
+##########################################################################################################
 
 class App:
     """Class to generate a streamlit app combined all required graphs in 4 pages
@@ -122,7 +124,7 @@ class App:
 
             st.header("Custom model building")
             col1, col2 = st.columns(2)
-            col1.image(Image.open('xgboost_v2.png'))
+            col1.image(Image.open('images/xgboost_v2.png'))
             col2.json({'lambda': 0.38873365526971265, 
                 'alpha': 0.01058538249593625,
                 'colsample_bytree': 0.5,
@@ -151,6 +153,7 @@ class App:
             st.pyplot(fig_corr)
             column = st.selectbox('Variable:',
                 NUMERICAL_COLS+CATEGORICAL_COLS)
+
             st.header("PDP plot")
             st.info("💡The Partial Dependence Plot shows the marginal effect one or two features have on the predicted outcome of a machine learning model. A partial dependence plot can show whether the relationship between the target and a feature is linear, monotonic or more complex.")
             ice = st.checkbox('ICE')
@@ -158,6 +161,7 @@ class App:
             fig = plot_pdp(model=clf, dataset=dataset, model_features=model_features,
                 column=column, ICE=ice, center=center)
             st.pyplot(fig)
+
             st.header("ALE plot")
             st.info("💡Accumulated local effects describe how features influence the prediction of a machine learning model on average. ALE plots are a faster and unbiased alternative to partial dependence plots ")
             ale_eff = plot_ale(clf, X_train_prep, X_train, transformer, column)
@@ -169,9 +173,11 @@ class App:
             st.header("Summary for numerical variables")
             fig2 = summary_plot_numerical(X_test)
             st.pyplot(fig2)
+
             st.header("Summary for categorical variables")
             fig3 = summary_plot_categorical(X_test)
             st.pyplot(fig3)
+
             st.header("Force plot")
             st.info("💡One can deep dive to explore for a given account what have been the main drivers of the prediction")
             index = st.number_input('Client id', min_value=0, max_value=599)
@@ -187,6 +193,7 @@ class App:
             col1.metric("Chi-squared statistic", round(test_statistic, 2))
             col2.metric("P-value", round(p_val, 4))
             col3.image(traffic_light(p_val), width=150)
+
             st.header("Conditional statistical parity")
             test_statistic2, p_val2 = test_statistic, p_val = compute_conditional_chi_squared(
                 [0, 1], 
@@ -198,6 +205,7 @@ class App:
             col1.metric("Chi-squared statistic", round(test_statistic2, 2))
             col2.metric("P-value", round(p_val2, 4))
             col3.image(traffic_light(p_val2), width=150)
+
             st.header("Equal odds")
             test_statistic3, p_val3 = test_statistic, p_val = compute_conditional_chi_squared(
                 [0, 1], 
@@ -230,11 +238,8 @@ class App:
                 TO_DROP = 1
                 
 
-
-
-
 def traffic_light(p_val:float):
     if p_val < 0.05:
-        return Image.open('feux-feurouge.jpg')
+        return Image.open('images/feux-feurouge.jpg')
     else:
-        return Image.open('feux-feuvert.jpg')
+        return Image.open('images/feux-feuvert.jpg')
