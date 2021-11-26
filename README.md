@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 ## App launch
 
-Just click on the badge above or run from the root directory
+Just click on the badge above or run from the root directory:
 
 ```[bash]
 streamlit run launch_app.py
